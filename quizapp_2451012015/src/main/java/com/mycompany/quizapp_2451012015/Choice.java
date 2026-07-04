@@ -12,12 +12,19 @@ public class Choice {
     private int id;
     private String content;
     private boolean isCorrect;
+    private int question_id;
 
     public Choice(int id, String content, boolean isCorrect) {
         this.id = id;
         this.content = content;
         this.isCorrect = isCorrect;
     }
+
+    public Choice(String content, boolean isCorrect) {
+        this.content = content;
+        this.isCorrect = isCorrect;
+    }
+
 
     /**
      * @return the id
@@ -59,6 +66,15 @@ public class Choice {
      */
     public void setIsCorrect(boolean isCorrect) {
         this.isCorrect = isCorrect;
+    }
+
+    public void setQuestion_id(int question_id) {
+        this.question_id = question_id;
+    }
+    
+
+    public int getQuestion_id() {
+        return question_id;
     }
     
 }

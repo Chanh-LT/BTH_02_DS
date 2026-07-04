@@ -188,14 +188,19 @@ public class Quizapp_2451012015 extends Application {
             int level_id = getLevel_Id(cbLevel.getValue());
             String correctAnswer = correctGroup.getSelectedToggle().getUserData().toString();
             
-            ArrayList<String> choices = new ArrayList<>();
+            ArrayList<Choice> choices = new ArrayList<>();
+            choices.add(new Choice(txtA.getText().trim(),correctAnswer.equals("A")));
+            choices.add(new Choice(txtB.getText().trim(),correctAnswer.equals("B")));
+            choices.add(new Choice(txtC.getText().trim(),correctAnswer.equals("C")));
+            choices.add(new Choice(txtD.getText().trim(),correctAnswer.equals("D")));
             
             Question question = new Question(txtQuestion.getText().trim(),txtHint.getText().trim(), level_id, category_id, "", choices);
             
-            boolean result = addQuestionToDB(txtQuestion.getText().trim(), txtHint.getText().trim(), 1, 1, 
-                            txtA.getText().trim(), txtB.getText().trim(), txtC.getText().trim(), 
-                            txtD.getText().trim(), correctAnswer);
+//            boolean result = addQuestionToDB(txtQuestion.getText().trim(), txtHint.getText().trim(), 1, 1, 
+//                            txtA.getText().trim(), txtB.getText().trim(), txtC.getText().trim(), 
+//                            txtD.getText().trim(), correctAnswer);
             
+            boolean result = addQuestionToDB(question);
             if(result) {
                 MyAlert.getInstance().showMessages("Thêm câu hỏi thành công");
                 txtQuestion.clear();
@@ -260,6 +265,46 @@ public class Quizapp_2451012015 extends Application {
             return false;
         }
     }
+    
+    private boolean addQuestionToDB(Question question) {
+        try {
+            Connection conn = JdbcConnector.getInstance().connect();
+            String sqlQuestion =  "INSERT INTO question(content, hint, image, category_id, level_id) " + "VALUES (?,?,?,?,?)";
+            PreparedStatement stmt = conn.prepareStatement(sqlQuestion, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, question.getContent());
+            stmt.setString(2, question.getHint());
+            stmt.setString(3, "");
+            stmt.setInt(4, question.getCategory_id());
+            stmt.setInt(5, question.getLevel_id());
+            
+            stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            int questionId = -1;
+            if(rs.next()) {
+                questionId = rs.getInt(1);
+            }
+            
+            if(questionId == -1 )
+                return false;
+            
+            for (Choice choice : question.getChoices()) {
+                choice.setQuestion_id(questionId);
+                insertChoice(conn, choice);
+            }
+//            insertChoice(conn, strA, correctAnswer.equals("A"), questionId);
+//            insertChoice(conn, strB, correctAnswer.equals("B"), questionId);
+//            insertChoice(conn, strC, correctAnswer.equals("C"), questionId);
+//            insertChoice(conn, strD, correctAnswer.equals("D"), questionId);
+            
+            
+            
+            stmt.close();
+            return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(Quizapp_2451012015.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }    
 
     private void insertChoice(Connection conn, String choice, boolean correctAnswer, int questionId) throws SQLException {
         String sqlChoice = "INSERT INTO choice(content, is_correct, question_id)" + "VALUES(?,?,?)";
@@ -272,6 +317,18 @@ public class Quizapp_2451012015 extends Application {
             Logger.getLogger(Quizapp_2451012015.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    private void insertChoice(Connection conn, Choice choice) throws SQLException {
+        String sqlChoice = "INSERT INTO choice(content, is_correct, question_id)" + "VALUES(?,?,?)";
+        try {
+            PreparedStatement stmt =  conn.prepareStatement(sqlChoice);
+            stmt.setString(1, choice.getContent());
+            stmt.setBoolean(2, choice.isIsCorrect());
+            stmt.setInt(3, choice.getQuestion_id());
+        } catch (SQLException ex) {
+            Logger.getLogger(Quizapp_2451012015.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }    
 
     private int getCategoryId(String val) {
         switch (val) {
