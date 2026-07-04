@@ -35,4 +35,8 @@ public class MyAlert {
         
         return alert.showAndWait();
     }
+
+    void showError(String please_nhập_câu_hỏi_và_gợi_ý) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

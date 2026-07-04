@@ -14,18 +14,27 @@ import java.util.logging.Logger;
  * @author admin
  */
 public class Question implements Cloneable{
-    private int id;
     private String content;
     private String hint;
-    private String category;
-    private String level;
+    private int level_id;
+    private int category_id;
+    private String image;
     private List<Choice> choices;
 
+    public Question(String content, String hint, int level_id, int category_id, String image, List<Choice> choices) {
+        this.content = content;
+        this.hint = hint;
+        this.level_id = level_id;
+        this.category_id = category_id;
+        this.image = image;
+        this.choices = choices;
+    }
+ 
     @Override
     protected Object clone() throws CloneNotSupportedException {
         try {
         Question copy = (Question) super.clone();
-        copy.choices = new ArrayList<>(this.choices);
+        copy.setChoices(new ArrayList<>(this.getChoices()));
         return copy;
     } catch (CloneNotSupportedException ex) {
         Logger.getLogger(Question.class.getName()).log(Level.SEVERE, null, ex);
@@ -33,55 +42,92 @@ public class Question implements Cloneable{
         }   
     }
 
-    
-    
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
+    /**
+     * @return the content
+     */
     public String getContent() {
         return content;
     }
 
+    /**
+     * @param content the content to set
+     */
     public void setContent(String content) {
         this.content = content;
     }
 
+    /**
+     * @return the hint
+     */
     public String getHint() {
         return hint;
     }
 
+    /**
+     * @param hint the hint to set
+     */
     public void setHint(String hint) {
         this.hint = hint;
     }
 
-    public String getCategory() {
-        return category;
+    /**
+     * @return the level_id
+     */
+    public int getLevel_id() {
+        return level_id;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    /**
+     * @param level_id the level_id to set
+     */
+    public void setLevel_id(int level_id) {
+        this.level_id = level_id;
     }
 
-    public String getLevel() {
-        return level;
+    /**
+     * @return the category_id
+     */
+    public int getCategory_id() {
+        return category_id;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    /**
+     * @param category_id the category_id to set
+     */
+    public void setCategory_id(int category_id) {
+        this.category_id = category_id;
     }
 
+    /**
+     * @return the image
+     */
+    public String getImage() {
+        return image;
+    }
+
+    /**
+     * @param image the image to set
+     */
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    /**
+     * @return the choices
+     */
     public List<Choice> getChoices() {
         return choices;
     }
 
+    /**
+     * @param choices the choices to set
+     */
     public void setChoices(List<Choice> choices) {
         this.choices = choices;
     }
-    
+
+
     
 }
