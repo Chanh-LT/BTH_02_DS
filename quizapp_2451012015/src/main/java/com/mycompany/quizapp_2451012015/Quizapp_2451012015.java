@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -38,6 +39,10 @@ public class Quizapp_2451012015 extends Application {
     private ThemeType curThemeType = ThemeType.DEFAULT_THEME;
     private Stage mainStage;
 
+    private List<Question> practiceQuestion = new ArrayList<>();
+    private QuestionQueryBuilder queryBuilder = new QuestionQueryBuilder();
+    private int currQuestionIdx = 0;
+    
     public static void main(String[] args) {
         launch(args);
     }
@@ -60,15 +65,15 @@ public class Quizapp_2451012015 extends Application {
         btnQuestion.setPrefWidth(250);
         btnPractice.setPrefWidth(250);
         btnExam.setPrefWidth(250);        
+               
+        System.out.println("SQL: " + queryBuilder.levelId(1).categoryId(1).toString());
         
         btnQuestion.setStyle(currentTheme.getButtonStyle());
         btnPractice.setStyle(currentTheme.getButtonStyle());
         btnExam.setStyle(currentTheme.getButtonStyle());
         
         btnQuestion.setOnAction((e -> showQuestionMgtForm()));
-            btnQuestion.setOnAction(e -> {
-            MyAlert.getInstance().showMessages("Dùng để quản lý câu hỏi");
-        });
+            btnQuestion.setOnAction(e -> showPracticeForm());
         
         btnPractice.setOnAction(e -> {
             MyAlert.getInstance().showMessages("Dùng để luyện đề");
@@ -77,6 +82,8 @@ public class Quizapp_2451012015 extends Application {
         btnExam.setOnAction(e -> {
             MyAlert.getInstance().showMessages("Dùng để luyện thi");
         });
+        
+
         
         ComboBox<ThemeType> cbTheme = new ComboBox<>();
         cbTheme.getItems().addAll(ThemeType.DEFAULT_THEME, ThemeType.DARK_THEME, ThemeType.LIGHT_THEME);
@@ -330,31 +337,83 @@ public class Quizapp_2451012015 extends Application {
         }
     }    
 
-    private int getCategoryId(String val) {
-        switch (val) {
-            case "Grammer":
-                return 1;
-            case "Vocabulary":
-                return 2;
-            case "reading":
-                return 3;
-             default:
-                 return 1;
-        }
+    private Integer getCategoryId(String val) {
+        if(val == null || val.equals("Eveything"))
+            return null;
+        
+        return switch (val) {
+            case "Grammer" ->
+                1;
+            case "Vocabulary" ->
+                2;
+            case "reading" ->
+                3;
+            default ->
+                 null;
+        };
     }
 
-    private int getLevel_Id(String val) {
-        switch (val) {
-            case "Dễ":
-                return 1;
-            case "Vocabular":
-                return 2;
-            case "reading":
-                return 3;
-             default:
-                 return 1;
-        }        
+    private Integer getLevel_Id(String val) {
+        return switch (val) {
+            case "Dễ" ->
+                1;
+            case "Vocabular" ->
+                2;
+            case "reading" -> 
+                3;
+            default ->
+                1;
+        };
     }
 
-
+    private void showPracticeForm() {
+        Label title = new Label("Thiết lập câu hỏi");
+        title.setAlignment(Pos.CENTER);
+        
+        TextField txtKeyWord = new TextField();
+        txtKeyWord.setPromptText("Nhập keyword vào");
+        txtKeyWord.setMaxWidth(300);
+        
+        ComboBox<String> cbLevel = new ComboBox<>();
+        cbLevel.getItems().addAll("All", "Easy", "Medium", "Hard");
+        
+        ComboBox<String> cbCategory = new ComboBox<>();
+        cbCategory.getItems().addAll("Everything", "Grammar", "Vocabulary", "Reading");
+        
+        TextField txtNumber = new TextField();
+        txtNumber.setPromptText("Nhập số câu hỏi: ");
+        
+        Button btnBack = new Button("Return");
+        btnBack.setOnAction(e -> showHome());
+        Button btnStart = new Button("Activating Training System");
+        btnStart.setOnAction(e -> { int number = Integer.parseInt(txtNumber.getText().trim());
+            Integer categoryId = getCategoryId(cbCategory.getValue());
+            Integer levelId = getLevel_Id(cbCategory.getValue());
+            QuestionRepository repo = new QuestionRepository();
+            List<Question> practiceQuestion = repo.getQuestionByFilter(txtKeyWord.getText(), categoryId, levelId, number);
+            if(practiceQuestion.isEmpty()) {
+                MyAlert.getInstance().showMessages("Không có câu hỏi nào được chọn");
+                return;
+            }
+            else {
+                MyAlert.getInstance().showMessages("Amount of câu hỏi: " + practiceQuestion.size());
+            }
+        });
+        
+        
+        VBox root = new VBox(15);
+        root.setStyle(currentTheme.getBackgroundStyle());
+        root.getChildren().addAll(title, txtKeyWord, txtNumber, cbLevel, btnBack, btnStart);  
+        
+        Scene scene = new Scene(root, 640, 480);
+        this.mainStage.setScene(scene);
+    }
+    
+    private void showPracticeQuestion() {
+        Question q = practiceQuestion.get(currQuestionIdx);
+        Label title = new Label("Question: " + currQuestionIdx + 1 + "/" +practiceQuestion.size());
+        Label question = new Label(q.getContent());
+        question.setWrapText(true);
+        question.setMaxWidth(500);
+    }
 }
