@@ -1,0 +1,80 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.quizapp_2451012015.model;
+
+/**
+ *
+ * @author admin
+ */
+public class Choice {
+    private int id;
+    private String content;
+    private boolean isCorrect;
+    private int question_id;
+
+    public Choice(int id, String content, boolean isCorrect) {
+        this.id = id;
+        this.content = content;
+        this.isCorrect = isCorrect;
+    }
+
+    public Choice(String content, boolean isCorrect) {
+        this.content = content;
+        this.isCorrect = isCorrect;
+    }
+
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    /**
+     * @return the content
+     */
+    public String getContent() {
+        return content;
+    }
+
+    /**
+     * @param content the content to set
+     */
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    /**
+     * @return the isCorrect
+     */
+    public boolean isIsCorrect() {
+        return isCorrect;
+    }
+
+    /**
+     * @param isCorrect the isCorrect to set
+     */
+    public void setIsCorrect(boolean isCorrect) {
+        this.isCorrect = isCorrect;
+    }
+
+    public void setQuestion_id(int question_id) {
+        this.question_id = question_id;
+    }
+    
+
+    public int getQuestion_id() {
+        return question_id;
+    }
+    
+}
